@@ -4,7 +4,9 @@ const {ConvertTo1ChannelStream} = require('./convertStream')
 const {playFile} = require('./media')
 const googleSpeech = require('@google-cloud/speech')
 const fs = require('fs')
-const blacklist = fs.readFileSync('wordBlacklist.txt', {encoding: "utf-8"}).split('\r\n')
+const db = require('./db')
+
+const blacklist = fs.readFileSync('wordBlacklist.txt', {encoding: "utf-8"}).split('\n')
 
 const googleSpeechClient = new googleSpeech.SpeechClient()
 
@@ -58,14 +60,8 @@ discordClient.on('message', async (message) => {
           for (let i = 0; i < split.length; i++) {
             if (blacklist.indexOf(split[i]) !== -1) {
               var offendingMember = message.guild.members.get(user.id)
-              offendingMember.send("Hey! \nWatch your language. :)")
-              .then(() => console.log(`Messaged ${offendingMember.displayName}`))
+              db.penalize(offendingMember);
               break;
-              //if()
-  //             offendingMember.kick()
-  // .then(() => console.log(`Kicked ${offendingMember.displayName}`))
-  // .catch(console.error);
-               
             }
           }
         })
@@ -82,5 +78,7 @@ discordClient.on('message', async (message) => {
     const member = message.member
     const memberVoiceChannel = member.voice.channel
     memberVoiceChannel.leave()
+  } else if (message.content == "!reset") {
+    db.reset()
   }
 })

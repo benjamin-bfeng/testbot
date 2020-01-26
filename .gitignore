@@ -2,3 +2,4 @@ config.json
 node_modules
 ffmpeg
 gcp-auth.json
+mongo-auth.json
