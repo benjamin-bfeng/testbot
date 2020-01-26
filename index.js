@@ -6,7 +6,7 @@ const googleSpeech = require('@google-cloud/speech')
 const fs = require('fs')
 const db = require('./db')
 
-const blacklist = fs.readFileSync('wordBlacklist.txt', {encoding: "utf-8"}).split('\n')
+const blacklist = fs.readFileSync('wordBlacklist.txt', {encoding: "utf-8"}).split('\r\n')
 
 const googleSpeechClient = new googleSpeech.SpeechClient()
 
