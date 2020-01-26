@@ -7,7 +7,7 @@ const fs = require('fs')
 const db = require('./db')
 const {isOffensive} = require('./embedding')
 
-const blacklist = fs.readFileSync('wordBlacklist.txt', {encoding: "utf-8"}).split('\n')
+const blacklist = fs.readFileSync('wordBlacklist.txt', {encoding: "utf-8"}).split('\r\n')
 
 const googleSpeechClient = new googleSpeech.SpeechClient()
 
@@ -29,7 +29,7 @@ discordClient.on('message', async (message) => {
 
     await playFile(connection, 'wrongChannelEn.mp3')
 
-    connection.on('speaking', (user, speaking) => {
+    connection.on('speaking', async (user, speaking) => {
       if (!speaking) {
         return
       }
@@ -50,7 +50,7 @@ discordClient.on('message', async (message) => {
       const recognizeStream = googleSpeechClient
         .streamingRecognize(request)
         .on('error', console.error)
-        .on('data', response => {
+        .on('data', async (response) => {
           const transcription = response.results
             .map(result => result.alternatives[0].transcript)
             .join('\n')
@@ -58,16 +58,24 @@ discordClient.on('message', async (message) => {
           console.log(`Transcription: ${transcription}`)
           const split = transcription.split(' ');
           console.log(split);
+          var alreadyPenalized = false;
           for (let i = 0; i < split.length; i++) {
             if (blacklist.indexOf(split[i]) !== -1) {
               var offendingMember = message.guild.members.get(user.id)
               db.penalize(offendingMember);
+              alreadyPenalized = true;
               break;
             }
           }
-          if (await isOffensive(transcription)) {
-            var offendingMember = message.guild.members.get(user.id)
-            db.penalize(offendingMember);
+          
+          if (!alreadyPenalized) {
+            let isOff = await isOffensive(transcription);
+            if (isOff) {
+              var offendingMember = message.guild.members.get(user.id)
+              db.penalize(offendingMember);
+            } else {
+              console.log("no penalty")
+            }
           }
         })
 
