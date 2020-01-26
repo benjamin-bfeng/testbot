@@ -8,6 +8,8 @@
   },
   "dependencies": {
     "@google-cloud/speech": "^2.3.1",
+    "@tensorflow-models/universal-sentence-encoder": "^1.2.2",
+    "@tensorflow/tfjs": "^1.5.1",
     "discord.js": "git+https://github.com/discordjs/discord.js.git#123713305ad5a6aa1e5205a53713494009740aef",
     "mongodb": "^3.5.2",
     "node-opus": "^0.3.3"

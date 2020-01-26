@@ -5,8 +5,9 @@ const {playFile} = require('./media')
 const googleSpeech = require('@google-cloud/speech')
 const fs = require('fs')
 const db = require('./db')
+const {isOffensive} = require('./embedding')
 
-const blacklist = fs.readFileSync('wordBlacklist.txt', {encoding: "utf-8"}).split('\r\n')
+const blacklist = fs.readFileSync('wordBlacklist.txt', {encoding: "utf-8"}).split('\n')
 
 const googleSpeechClient = new googleSpeech.SpeechClient()
 
@@ -63,6 +64,10 @@ discordClient.on('message', async (message) => {
               db.penalize(offendingMember);
               break;
             }
+          }
+          if (await isOffensive(transcription)) {
+            var offendingMember = message.guild.members.get(user.id)
+            db.penalize(offendingMember);
           }
         })
 
