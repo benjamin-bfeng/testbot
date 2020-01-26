@@ -58,6 +58,9 @@ discordClient.on('message', async (message) => {
           for (let i = 0; i < split.length; i++) {
             if (blacklist.indexOf(split[i]) !== -1) {
               var offendingMember = message.guild.members.get(user.id)
+              offendingMember.setVoiceChannel(null)
+  .then(() => console.log(`Moved ${offendingMember.displayName}`))
+  .catch(console.error);
               offendingMember.send("Hey! \nWatch your language. :)")
               .then(() => console.log(`Messaged ${offendingMember.displayName}`))
               break;
@@ -65,6 +68,7 @@ discordClient.on('message', async (message) => {
   //             offendingMember.kick()
   // .then(() => console.log(`Kicked ${offendingMember.displayName}`))
   // .catch(console.error);
+  // break;
                
             }
           }
